@@ -1,0 +1,21 @@
+.item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.item button {
+    margin-left: 5px;
+    padding: 2px 6px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.item button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
