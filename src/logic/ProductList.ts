@@ -9,32 +9,38 @@ export interface ItemType {
 
 export const Calculator = () => {
     const [items, setItems] = useState<ItemType[]>([
+        { id: 1, title: "Acer Predator", price: 1500, stock: 5 },
+        { id: 2, title: "Asus ROG", price: 1200, stock: 3 },
+        { id: 3, title: "MacBook Pro", price: 2500, stock: 2 },
     ]);
+
     const addOrUpdate = (newItem: Partial<ItemType> & { title: string }) => {
         setItems(prev => {
             const existingItem = prev.findIndex(
                 item => item.title.toLowerCase() === newItem.title.toLowerCase()
             );
-            const stockValue = newItem.stock !== undefined ? Number(newItem.stock) : 0
+            const stockValue = newItem.stock !== undefined ? Number(newItem.stock) : 0;
             const priceValue = newItem.price !== undefined ? Number(newItem.price) : undefined;
+
             if (existingItem !== -1) {
-                if (confirm(`Товар "${newItem.title}" уже сущетсвует, Заменить?`)) {
-                    const upDated = { ...prev[existingItem] };
-                    if (newItem.price !== undefined) {
-                        upDated.price = newItem.price;
+                if (confirm(`Товар "${newItem.title}" уже существует. Заменить?`)) {
+                    const updated = { ...prev[existingItem] };
+                    const hasPrice = newItem.price !== undefined;
+                    const hasStock = newItem.stock !== undefined;
+
+                    if (hasPrice) updated.price = newItem.price;
+                    if (hasStock) {
+                        updated.stock = updated.stock <= 0
+                            ? newItem.stock!
+                            : updated.stock + newItem.stock!;
                     }
-                    if (newItem.title !== undefined) {
-                        upDated.title += newItem.title;
-                    }
-                    if (upDated.stock < 0) {
-                        upDated.stock = 0;
-                    }
+
                     const copy = [...prev];
-                    copy[existingItem] = upDated;
+                    copy[existingItem] = updated;
                     return copy;
                 } else {
                     const copy = [...prev];
-                    const uniqueTitle = `${newItem.title} = ${Date.now()}`;
+                    const uniqueTitle = `${newItem.title}-${Date.now()}`;
                     copy.push({
                         id: Date.now(),
                         title: uniqueTitle,
@@ -44,15 +50,19 @@ export const Calculator = () => {
                     return copy;
                 }
             } else {
-                return [...prev, {
-                    id: Date.now(),
-                    title: newItem.title,
-                    price: priceValue,
-                    stock: stockValue
-                }]
+                return [
+                    ...prev,
+                    {
+                        id: Date.now(),
+                        title: newItem.title,
+                        price: priceValue,
+                        stock: stockValue
+                    }
+                ];
             }
         });
     };
+
     const [sortDirection, setSortDirection] = useState<{
         [key in keyof ItemType]?: "asc" | "desk";
     }>({});
